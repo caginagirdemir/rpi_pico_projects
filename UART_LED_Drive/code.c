@@ -12,8 +12,6 @@
 #define STOP_BITS 1
 #define PARITY    UART_PARITY_NONE
 
-volatile bool flag = false;
-
 volatile uint16_t duration = 250;
 
 char *str;
