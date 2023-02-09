@@ -91,7 +91,8 @@ class MPU6050_DMP_drive:
             self.i2c.writeto_mem(MPU6050_AD, ZRMOT_DUR, self._zero_motion_dur) # set motion duration -> 2ms #for all axis
             #INTERRUPT ENABLE SET
             ret = self._i2c.readfrom_mem(MPU6050_AD, INT_ENABLE, 1)
-            ret = (int.from_bytes(ret, "big") | MOT_MASK)
+            ret = int.from_bytes(ret, "big")
+            ret |= MOT_MASK
             self._i2c.writeto_mem(MPU6050_AD, INT_ENABLE, (ret).to_bytes(1, byteorder ='big')))  
         except OSError as ex:
             for err in ex.args:
@@ -109,13 +110,20 @@ class MPU6050_DMP_drive:
     """
     set_filter_cutoff
     :param byte cutoff_freq         : High_pass_filter_cutoff_frequence
+    CutOff Values
+    NONE    = 0x00
+    5Hz     = 0x01
+    2.5Hz   = 0x02
+    1.25Hz  = 0x03
+    0.63Hz  = 0x04
+    HOLD    = 0x07
     """
     def set_filter_cutoff(self, cutoff_freq = HPF_5Hz):
         self._cutoff = cutoff_freq
         try:
             ret = self._i2c.readfrom_mem(MPU6050_AD, ACCEL_CONFIG, 1)
             ret = int.from_bytes(ret, "big")
-            ret |= self._cutoff
+            ret |= cutoff_freq
             self._i2c.writeto_mem(MPU6050_AD, ACCEL_CONFIG, (ret).to_bytes(1, byteorder ='big')))  
         except OSError as ex:
             for err in ex.args:
@@ -147,3 +155,8 @@ class MPU6050_DMP_drive:
                     print("connection error!")
                 else:
                     print(err)
+
+
+
+                    
+
